@@ -1,5 +1,7 @@
 {
   "name": "recuerdaLugar",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
