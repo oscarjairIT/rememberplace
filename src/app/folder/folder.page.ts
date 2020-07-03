@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 
 /**
  * Para manejo de Google Maps API
@@ -46,7 +47,10 @@ export class FolderPage implements OnInit {
   ];
 
   
-  constructor(private activatedRoute: ActivatedRoute) { }
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private alertController: AlertController
+  ) { }
 
   ngOnInit() {
     // this.folder = this.activatedRoute.snapshot.paramMap.get('id');
@@ -76,10 +80,17 @@ export class FolderPage implements OnInit {
       },
       zoom: 12
     });
-
+    // Carga marcadores
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
       this.renderMarkers();
       mapEle.classList.add('show-map');
+    });
+    // LLama newMarkerWindow() al escuchar un 'click'
+    google.maps.event.addListener(this.map, 'click', (mapsMouseEvent) => {
+      console.log("LAT: ",mapsMouseEvent.latLng.lat());
+      console.log("LNG: ",mapsMouseEvent.latLng.lng());
+
+      this.newMarkerWindow(mapsMouseEvent.latLng.lat(), mapsMouseEvent.latLng.lng())
     });
   }
 
@@ -95,6 +106,59 @@ export class FolderPage implements OnInit {
     this.markers.forEach(marker => {
       this.addMarker(marker);
     });
+  }
+
+  /**
+   * Crea dialogo para confirmar la 
+   * creacion de un marcador
+   */
+  async newMarkerWindow(lat: number, lng: number){
+
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Nuevo Lugar',
+      // subHeader: 'Subtitle',
+      // message: 'This is an alert message.',
+      inputs: [
+        {
+          name: 'titulo',
+          type: 'text',
+          id: 'title',
+          // value: 'hello',
+          placeholder: 'ej: Plaza con equipo para entrenar'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => {
+            console.log('Cancela creacion');
+          }
+        }, {
+          text: 'Crear',
+          handler: (data) => {
+            console.log('Confirma creacion');
+
+            this.markers.push(
+              {
+                position: {
+                  lat: lat,
+                  lng: lng,
+                },
+                title: data.titulo
+              }
+            );
+            this.renderMarkers();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+
+
   }
 
 }
