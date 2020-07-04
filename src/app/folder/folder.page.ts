@@ -25,6 +25,7 @@ export class FolderPage implements OnInit {
 
   map = null
   newMarker;
+  infoWindows: any = [];
 
   /**
    * Variables de prueba
@@ -57,6 +58,9 @@ export class FolderPage implements OnInit {
     this.loadMap();
   }
 
+  /**
+   * Carga mapa y sus propiedades
+   */
   loadMap(){
     // create a new map by passing HTMLElement
     const mapEle: HTMLElement = document.getElementById('map');
@@ -90,16 +94,37 @@ export class FolderPage implements OnInit {
       console.log("LAT: ",mapsMouseEvent.latLng.lat());
       console.log("LNG: ",mapsMouseEvent.latLng.lng());
 
-      this.newMarkerWindow(mapsMouseEvent.latLng.lat(), mapsMouseEvent.latLng.lng())
+      this.newMarkerWindow(mapsMouseEvent.latLng.lat(), mapsMouseEvent.latLng.lng());
     });
+    // Muestra info del Marker //revisar codigo https://www.youtube.com/watch?v=gSaDDxLbKSs
+
   }
 
+  /**
+   * Crea marcador y sus propiedades
+   */
   addMarker(marker: Marker) {
-    return new google.maps.Marker({
+    let newMarker = new google.maps.Marker({
       position: marker.position,
       map: this.map,
       title: marker.title
     });
+
+    let infoWindowContent = '<div id="content">' +
+      '<h4 style="text-align: center" id="firstHeading" class"firstHeading">' + marker.title + '</h4>' +
+    '</div>';
+
+    let infoWindow = new google.maps.InfoWindow({
+    content: infoWindowContent
+    });
+
+    newMarker.addListener('click', () => {
+      this.closeAllInfoWindows();
+      infoWindow.open(this.map, newMarker);
+    });
+    this.infoWindows.push(infoWindow);
+
+    return newMarker
   }
 
   renderMarkers() {
@@ -157,8 +182,12 @@ export class FolderPage implements OnInit {
     });
 
     await alert.present();
+  }
 
-
+  closeAllInfoWindows() {
+    for(let window of this.infoWindows) {
+      window.close();
+    }
   }
 
 }
