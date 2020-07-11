@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { LocalStorageService } from '../services/local-storage.service';
 
 /**
  * Para manejo de Google Maps API
@@ -50,11 +51,17 @@ export class FolderPage implements OnInit {
   
   constructor(
     private activatedRoute: ActivatedRoute,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private localStorageService: LocalStorageService
   ) { }
 
   ngOnInit() {
     // this.folder = this.activatedRoute.snapshot.paramMap.get('id');
+    this.localStorageService.getMyPlaces().then(
+      resp =>{
+        this.markers = resp;
+      }
+    );
     this.loadMap();
   }
 
@@ -176,6 +183,7 @@ export class FolderPage implements OnInit {
               }
             );
             this.renderMarkers();
+            this.localStorageService.saveMyPlaces(this.markers);
           }
         }
       ]
