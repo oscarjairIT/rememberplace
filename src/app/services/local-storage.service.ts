@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
-import { Observable } from 'rxjs';
+import { ToastService } from './toast.service';
 
 interface Marker {
   position: {
@@ -15,10 +15,9 @@ interface Marker {
 })
 export class LocalStorageService {
 
-  myPlaces: Marker[] = [];
-
   constructor(
-    private storage: Storage
+    private storage: Storage,
+    private toastService: ToastService
   ) { }
 
   saveMyPlaces(places: Marker[]): Promise<any>{
@@ -27,18 +26,25 @@ export class LocalStorageService {
         resp=>{
           console.log("lugares guardados, ", resp);
           resolve(resp);
+        },
+        err =>{
+          console.log("Error: ", err);
+          this.toastService.presentToast("Error al guardar tus lugares");
         }
       );
     });
   }
 
   getMyPlaces(): Promise<Marker[]>{
-
     return new Promise((resolve) => {
       this.storage.get('myPlaces').then(
         resp =>{
           console.log("mis lugares en BD: ", resp);
           resolve(resp);
+        },
+        err=>{
+          console.log("Error: ", err);
+          this.toastService.presentToast("Error al obtener tus lugares");
         }
       );
     });

@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { LocalStorageService } from '../services/local-storage.service';
 import { LocationService } from '../services/location.service';
@@ -53,14 +52,12 @@ export class FolderPage implements OnInit {
 
   
   constructor(
-    private activatedRoute: ActivatedRoute,
     private alertController: AlertController,
     private localStorageService: LocalStorageService,
     private locationService: LocationService
   ) { }
 
   ngOnInit() {
-    // this.folder = this.activatedRoute.snapshot.paramMap.get('id');
     this.locationService.getUserPosition().then(
       currentPosition =>{
 
@@ -90,17 +87,6 @@ export class FolderPage implements OnInit {
   loadMap(currentPos: Geoposition){
     // create a new map by passing HTMLElement
     const mapEle: HTMLElement = document.getElementById('map');
-    /**
-     * Position para pruebas en la WEB
-     *
-    {
-      position: {
-        lat: -33.014463241226736,
-        lng: -71.55532252917327,
-      },
-      title: 'Frente Restaurant Tierra del Fuego'
-    }
-    */
 
     // create map
     this.map = new google.maps.Map(mapEle, {
@@ -122,8 +108,6 @@ export class FolderPage implements OnInit {
 
       this.newMarkerWindow(mapsMouseEvent.latLng.lat(), mapsMouseEvent.latLng.lng());
     });
-    // Muestra info del Marker //revisar codigo https://www.youtube.com/watch?v=gSaDDxLbKSs
-
   }
 
   /**
@@ -137,8 +121,8 @@ export class FolderPage implements OnInit {
     });
 
     let infoWindowContent = '<div id="content">' +
-      '<h4 style="text-align: center" id="firstHeading" class"firstHeading">' + marker.title + '</h4>' +
-    '</div>';
+                              '<h4 style="text-align: center" id="firstHeading" class"firstHeading">' + marker.title + '</h4>' +
+                            '</div>';
 
     let infoWindow = new google.maps.InfoWindow({
     content: infoWindowContent
