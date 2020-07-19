@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { LocalStorageService } from '../services/local-storage.service';
+import { LocationService } from '../services/location.service';
+import { Geoposition } from '@ionic-native/geolocation/ngx';
+
 
 /**
  * Para manejo de Google Maps API
@@ -52,23 +55,39 @@ export class FolderPage implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private alertController: AlertController,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private locationService: LocationService
   ) { }
 
   ngOnInit() {
     // this.folder = this.activatedRoute.snapshot.paramMap.get('id');
-    this.localStorageService.getMyPlaces().then(
-      resp =>{
-        this.markers = resp;
+    this.locationService.getUserPosition().then(
+      currentPosition =>{
+
+        this.localStorageService.getMyPlaces().then(
+          myPlaces =>{
+            
+            if (myPlaces == null) {
+              this.markers = [];
+              this.loadMap(currentPosition);
+            } else {
+              this.markers = myPlaces;
+              this.loadMap(currentPosition);
+            }
+
+          }
+        );
+
       }
     );
-    this.loadMap();
+
+    
   }
 
   /**
    * Carga mapa y sus propiedades
    */
-  loadMap(){
+  loadMap(currentPos: Geoposition){
     // create a new map by passing HTMLElement
     const mapEle: HTMLElement = document.getElementById('map');
     /**
@@ -86,10 +105,10 @@ export class FolderPage implements OnInit {
     // create map
     this.map = new google.maps.Map(mapEle, {
       center: {
-        lat: -33.014463241226736,
-        lng: -71.55532252917327,
+        lat: currentPos.coords.latitude,
+        lng: currentPos.coords.longitude,
       },
-      zoom: 12
+      zoom: 15
     });
     // Carga marcadores
     google.maps.event.addListenerOnce(this.map, 'idle', () => {
