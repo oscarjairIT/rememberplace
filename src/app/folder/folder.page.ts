@@ -3,6 +3,7 @@ import { AlertController } from '@ionic/angular';
 import { LocalStorageService } from '../services/local-storage.service';
 import { LocationService } from '../services/location.service';
 import { Geoposition } from '@ionic-native/geolocation/ngx';
+import { Marker } from '../models/marker';
 
 
 /**
@@ -10,13 +11,7 @@ import { Geoposition } from '@ionic-native/geolocation/ngx';
  */
 declare var google;
 
-interface Marker {
-  position: {
-    lat: number,
-    lng: number,
-  };
-  title: string;
-}
+
 
 @Component({
   selector: 'app-folder',
@@ -39,14 +34,16 @@ export class FolderPage implements OnInit {
         lat: -33.0090524845652,
         lng: -71.54860754016043,
       },
-      title: 'Esquina Mall Marina'
+      title: 'Esquina Mall Marina',
+      description: ""
     },
     {
       position: {
         lat: -33.014463241226736,
         lng: -71.55532252917327,
       },
-      title: 'Frente Restaurant Tierra del Fuego'
+      title: 'Frente Restaurant Tierra del Fuego',
+      description: ""
     }
   ];
 
@@ -117,7 +114,8 @@ export class FolderPage implements OnInit {
     let newMarker = new google.maps.Marker({
       position: marker.position,
       map: this.map,
-      title: marker.title
+      title: marker.title,
+      description: "un texto terrible largo dinamico para describir po"
     });
 
     let infoWindowContent = '<div id="content">' +
@@ -182,7 +180,8 @@ export class FolderPage implements OnInit {
                   lat: lat,
                   lng: lng,
                 },
-                title: data.titulo
+                title: data.titulo,
+                description: ""
               }
             );
             this.renderMarkers();

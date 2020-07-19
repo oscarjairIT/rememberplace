@@ -1,14 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { ToastService } from './toast.service';
-
-interface Marker {
-  position: {
-    lat: number,
-    lng: number,
-  };
-  title: string;
-}
+import { Marker } from '../models/marker';
 
 @Injectable({
   providedIn: 'root'
