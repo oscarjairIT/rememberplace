@@ -4,7 +4,8 @@ import { LocalStorageService } from '../services/local-storage.service';
 import { LocationService } from '../services/location.service';
 import { Geoposition } from '@ionic-native/geolocation/ngx';
 import { Marker } from '../models/marker';
-
+import { ActionSheetController } from '@ionic/angular';
+import { ToastService } from '../services/toast.service';
 
 /**
  * Para manejo de Google Maps API
@@ -24,6 +25,8 @@ export class FolderPage implements OnInit {
   map = null
   newMarker;
   infoWindows: any = [];
+
+  seeMarker = false;
 
   /**
    * Variables de prueba
@@ -51,7 +54,9 @@ export class FolderPage implements OnInit {
   constructor(
     private alertController: AlertController,
     private localStorageService: LocalStorageService,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private actionSheetController: ActionSheetController,
+    private toastService: ToastService
   ) { }
 
   ngOnInit() {
@@ -127,8 +132,12 @@ export class FolderPage implements OnInit {
     });
 
     newMarker.addListener('click', () => {
-      this.closeAllInfoWindows();
-      infoWindow.open(this.map, newMarker);
+      // this.closeAllInfoWindows();
+      // infoWindow.open(this.map, newMarker);
+
+      // this.presentActionSheet();
+      this.seeMarker = true;
+
     });
     this.infoWindows.push(infoWindow);
 
@@ -198,6 +207,52 @@ export class FolderPage implements OnInit {
     for(let window of this.infoWindows) {
       window.close();
     }
+  }
+
+  async presentActionSheet() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Albums',
+      cssClass: 'my-custom-class',
+      buttons: [{
+        text: 'Delete',
+        role: 'destructive',
+        icon: 'trash',
+        handler: () => {
+          console.log('Delete clicked');
+        }
+      }, {
+        text: 'Share',
+        icon: 'share',
+        handler: () => {
+          console.log('Share clicked');
+        }
+      }, {
+        text: 'Play (open modal)',
+        icon: 'caret-forward-circle',
+        handler: () => {
+          console.log('Play clicked');
+        }
+      }, {
+        text: 'Favorite',
+        icon: 'heart',
+        handler: () => {
+          console.log('Favorite clicked');
+        }
+      }, {
+        text: 'Cancel',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+          console.log('Cancel clicked');
+        }
+      }]
+    });
+    await actionSheet.present();
+  }
+
+  deleteMarker(){
+    this.toastService.presentToast("Eliminando Marcador");
+    this.seeMarker = false;
   }
 
 }
